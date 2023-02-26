@@ -36,6 +36,13 @@ func Search(c *fiber.Ctx) error {
 
 	database.DB.Where("name=?", data["name"]).First(&item)
 
+	if item.Name == "" {
+		c.Status(fiber.StatusNotFound)
+		return c.JSON(fiber.Map{
+			"message": "item not found",
+		})
+	}
+
 	return c.JSON(item)
 }
 
@@ -50,7 +57,7 @@ func FilterPrice(c *fiber.Ctx) error {
 	var item models.Item
 
 	database.DB.Order("price").Find(&item)
-	return c.JSON(models.Item{})
+	return c.JSON(item)
 }
 
 func GiveRating(c *fiber.Ctx) error {
