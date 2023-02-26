@@ -3,6 +3,7 @@ package items
 import (
 	"assignment1GO/database"
 	"assignment1GO/models"
+	"encoding/json"
 	"github.com/gofiber/fiber/v2"
 )
 
@@ -47,17 +48,28 @@ func Search(c *fiber.Ctx) error {
 }
 
 func FilterRating(c *fiber.Ctx) error {
-	var item models.Item
+	//var item models.Item
+	//
+	//database.DB.Order("rating").Find(&item)
+	//return c.JSON(item)
 
-	database.DB.Order("rating").Find(&item)
-	return c.JSON(item)
+	var items []models.Item
+	database.DB.Order("rating").Find(&items)
+
+	a, _ := json.Marshal(items)
+	n := len(a) //Find the length of the byte array
+	s := string(a[:n])
+	return c.JSON(s)
 }
 
 func FilterPrice(c *fiber.Ctx) error {
-	var item models.Item
+	var items []models.Item
+	database.DB.Order("price").Find(&items)
 
-	database.DB.Order("price").Find(&item)
-	return c.JSON(item)
+	a, _ := json.Marshal(items)
+	n := len(a) //Find the length of the byte array
+	s := string(a[:n])
+	return c.JSON(s)
 }
 
 func GiveRating(c *fiber.Ctx) error {
@@ -68,7 +80,7 @@ func GiveRating(c *fiber.Ctx) error {
 		return err
 	}
 
-	// UPDATE users SET name='hello', age=18 WHERE role = 'admin';
+	// UPDATE users SET name='hello' WHERE role = 'admin';
 	database.DB.Model(models.Item{}).Where("name = ?", data["name"]).Updates(models.Item{Rating: data["rating"]})
-	return c.JSON(models.Item{})
+	return c.JSON("success")
 }
